@@ -16,11 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
         let sb:UIStoryboard = UIStoryboard.init(name: "Main", bundle: nil)
         let rootVC:UIViewController = sb.instantiateViewController(withIdentifier: "ListTableViewController") 
         let nc:UINavigationController = UINavigationController(rootViewController: rootVC)
         self.window?.rootViewController = nc
-        
         
         return true
     }

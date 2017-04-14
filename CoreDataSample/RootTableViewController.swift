@@ -11,9 +11,8 @@ import UIKit
 import CoreData
 
 class RootViewController: UITableViewController {
-
-//    var myContext: NSManagedObjectContext!
-    var allData: NSMutableArray = NSMutableArray()
+    
+    var dataArray: NSMutableArray = NSMutableArray()
     
     lazy var managedObjectContext: NSManagedObjectContext = {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -33,7 +32,6 @@ class RootViewController: UITableViewController {
     func rightBarButton() -> UIBarButtonItem {
         let right: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(self.rightClick))
         return right
-        
     }
     
     func rightClick() -> Void {
@@ -50,42 +48,33 @@ class RootViewController: UITableViewController {
         let sortDescriptor = NSSortDescriptor(key: "accoutID", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
-        // Execute FetchRequest Result
-//        let error:NSError? = nil
-        
-        //open func execute(_ request: NSPersistentStoreRequest) throws -> NSPersistentStoreResult
-        
-            
-            do{
-                let results = try managedObjectContext.fetch(fetchRequest)
-                print("resultsNum:",results.count)
-                if results.count > 0 {
-                    self.allData.addObjects(from: results)
-                }
-            }catch{
-                print("no results")
+        // Context Fetch Result
+        do{
+            let results = try managedObjectContext.fetch(fetchRequest)
+            print("resultsNum:",results.count)
+            if results.count > 0 {
+                self.dataArray.addObjects(from: results)
             }
+        }catch{
+            print("no results")
+        }
         
-//            self.allData.addObjects(from: persistentStoreResult.obj)
-        
-            self.tableView.reloadData()
-        
+        self.tableView.reloadData()
     }
     
     func inserData() -> Void {
-
+        
         let entityDescription:NSEntityDescription = NSEntityDescription.entity(forEntityName: "ZTUser", in: managedObjectContext)!
         if let user = NSManagedObject(entity: entityDescription, insertInto: managedObjectContext) as? ZTUser{
             user.accoutID = 7
-            user.email = "wwzfj13ww@163.com"
+            user.email = "xxx.com"
             user.gender = true
-            self.allData.add(user)
-            
+            self.dataArray.add(user)
             
             do{
                 try managedObjectContext.save()
                 print("增加保存成功 ")
-                let kIndexPath:NSIndexPath = NSIndexPath(row: self.allData.count-1, section: 0)
+                let kIndexPath:NSIndexPath = NSIndexPath(row: self.dataArray.count-1, section: 0)
                 self.tableView.insertRows(at: [kIndexPath as IndexPath], with: UITableViewRowAnimation.left)
             }catch{
                 let nserror = error as NSError
@@ -94,16 +83,15 @@ class RootViewController: UITableViewController {
         }else{
             print("==warning==Contact needs a name");
         }
-        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.allData.count
+        return self.dataArray.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "contactIdentifier", for: indexPath) as! ContactTableViewCell
-        if let user:ZTUser = self.allData.object(at: indexPath.row) as? ZTUser{
+        if let user:ZTUser = self.dataArray.object(at: indexPath.row) as? ZTUser{
             cell.contact.text = "\(user.accoutID)"
         }
         return cell
@@ -111,13 +99,13 @@ class RootViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete {
-            let user:ZTUser = self.allData.object(at:  indexPath.row) as! ZTUser
-//FIXME: "self.allData.remove(at: indexPath.row)"当此断替换替换 下面一句时 会crash  为什么？
-            self.allData.remove(user)
+            let user:ZTUser = self.dataArray.object(at:  indexPath.row) as! ZTUser
+//            self.dataArray.remove(at: indexPath.row)
+            self.dataArray.remove(user)
             
             managedObjectContext.delete(user)
             do{
-               try managedObjectContext.save()
+                try managedObjectContext.save()
                 print("删除成功row:",indexPath.row)
                 
                 self.tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.left)
