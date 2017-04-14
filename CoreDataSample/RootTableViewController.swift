@@ -73,12 +73,12 @@ class RootViewController: UITableViewController {
             
             do{
                 try managedObjectContext.save()
-                print("增加保存成功 ")
+                print("saved success! ")
                 let kIndexPath:NSIndexPath = NSIndexPath(row: self.dataArray.count-1, section: 0)
                 self.tableView.insertRows(at: [kIndexPath as IndexPath], with: UITableViewRowAnimation.left)
             }catch{
                 let nserror = error as NSError
-                print("增加保存失败%@",nserror.description)
+                print("save failed%@",nserror.description)
             }
         }else{
             print("==warning==Contact needs a name");
@@ -106,7 +106,7 @@ class RootViewController: UITableViewController {
             managedObjectContext.delete(user)
             do{
                 try managedObjectContext.save()
-                print("删除成功row:",indexPath.row)
+                print("delete success row:",indexPath.row)
                 
                 self.tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.left)
             }catch{
